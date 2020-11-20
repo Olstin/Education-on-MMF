@@ -1,0 +1,190 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_PRICE 2147483647
+
+int size = 0;
+char** vname = NULL;
+unsigned long int** graph = NULL;
+unsigned long int* d = NULL;
+unsigned long int* v = NULL;
+unsigned long int* v_idx = NULL;
+int id_v_idx = 0;
+
+int find_idx_by_name(char* name) {
+	for (int i = 0; i < size; ++i)
+	{
+		if (strcmp(vname[i], name) == 0)
+			return i;
+	}
+	return -1;
+}
+
+int name_to_idx(char* name) {
+	int res = find_idx_by_name(name);
+	if (res != -1) {
+		return res;
+	}
+	++size;
+	vname = realloc(vname,size*sizeof(vname));
+            if(vname == NULL){
+                return -1;
+            }
+    graph = realloc(graph,size*sizeof(graph));
+            if(graph == NULL){
+                return -1;
+            }
+    for(int i=0; i<size-1; ++i)
+    {
+        graph[i] = realloc(graph[i],size*sizeof(int*));
+            if(graph[i] == NULL){
+                return -1;
+            }
+        graph[i][size-1] = 0;
+    }
+    graph[size-1] = malloc(size*sizeof(int*));
+        if(graph[size - 1] == NULL){
+            return -1;
+        }
+    memset(graph[size-1], 0, size*sizeof(int*));
+	vname[size - 1] = malloc(strlen(name) + 1);
+
+	if(vname[size - 1] == NULL){
+        return -1;
+	}
+	strcpy(vname[size - 1], name);
+	return size - 1;
+}
+
+void print(unsigned long int price) {
+    printf("%ld\n", price);
+	for (int i = 0; i < id_v_idx; ++i) {
+		printf("\"%s\" ", vname[v_idx[i]]);
+	}
+}
+void read_input_data(FILE* fd,int *start,int *end) {
+	char name_from[101];
+	char name_to[101];
+	unsigned long int price = 0;
+
+	while (fscanf(fd, "\"%100[^\"]\" \"%100[^\"]\" %ld\n", name_from, name_to, &price) == 3) {
+		int i = name_to_idx(name_from);
+		int j = name_to_idx(name_to);
+		graph[i][j] = price;
+	}
+    d = malloc(size*sizeof(int*));
+        if(d == NULL){
+            return ;
+        }
+    v = malloc(size*sizeof(int*));
+        if(v == NULL) {
+            free(d);
+            return ;
+        }
+    v_idx = malloc(size*sizeof(int*));
+        if(v_idx == NULL){
+            free(d);
+            free(v);
+            return ;
+        }
+	memset(v, 0, size*sizeof(int*));
+
+	while (scanf("\"%100[^\"]\" \"%100[^\"]\"", name_from, name_to) != 2);
+	*start = find_idx_by_name(name_from);
+	*end = find_idx_by_name(name_to);
+	for(int i = 0; i < size; ++i) {
+		d[i] = MAX_PRICE;
+		v[i] = 1;
+	}
+	d[*start] = 0;
+
+}
+int Dijkstra_find(int start,int end,unsigned long int* price) {
+  	int min_index;
+    unsigned long int min, min1;
+    *price = 0;
+  	do {
+		min_index = MAX_PRICE;
+		min = MAX_PRICE;
+		for (int i = 0; i < size; ++i) {
+			if ((v[i] == 1) && d[i] < min) {
+				min = d[i];
+				min_index = i;
+			}
+		}
+
+		if (min_index != MAX_PRICE) {
+			for (int i = 0; i < size; ++i) {
+				if (graph[min_index][i] > 0) {
+					min1 = min + graph[min_index][i];
+
+					if (min1 < d[i]) {
+						d[i] = min1;
+					}
+				}
+			}
+			v[min_index] = 0;
+		}
+	} while (min_index < MAX_PRICE);
+
+	v_idx[0] = start;
+
+	id_v_idx = 1;
+	*price = d[start];
+    while (end != start) {
+		for (int i = 0; i < size; ++i) {
+			if (graph[start][i] > 0) {
+				unsigned int tmp = *price + graph[start][i];
+				if (tmp == d[i]) {
+					*price = tmp;
+					start = i;
+					v_idx[id_v_idx++] = i;
+					i = 0;
+				}
+			}
+		}
+
+		if (end == start) {
+			break;
+		}
+        if (id_v_idx>1) {
+            --id_v_idx;
+			*price = d[v_idx[id_v_idx - 1]];
+			graph[v_idx[id_v_idx - 1]][v_idx[id_v_idx]] = 0;
+			start = v_idx[id_v_idx - 1];
+        }
+        else {
+            return -1;
+        }
+	}
+    return 0;
+}
+int main() {
+	FILE* fd = fopen("distances.txt", "r");
+	if (fd == NULL) {
+		return -1;
+	}
+    int start,end = 0;
+    unsigned long int price = 0;
+    read_input_data(fd, &start, &end);
+
+    if(Dijkstra_find(start, end, &price) != -1) {
+        print(price);
+    }
+    else {
+        printf("\"No route\"");
+    }
+
+    for(int i=0; i < size; ++i) {
+        free(vname[i]);
+        free(graph[i]);
+    }
+    free(vname);
+    free(graph);
+    free(v_idx);
+    free(v);
+    free(d);
+    fclose(fd);
+	return 0;
+}
