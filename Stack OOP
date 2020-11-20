@@ -1,0 +1,184 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+template <typename K>
+class Stack {
+private:
+	struct Node {
+		Node() :next(NULL) {}
+		K elem;
+		Node* next;
+	};
+	Node* tail;
+public:
+	Stack() :tail(NULL) {}
+
+	~Stack() {
+		while (tail) {
+			Node* p = tail;
+			tail = tail->next;
+			delete p;
+		}
+	}
+
+	bool isEmpty() {
+		if (this->tail == NULL) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	void push(K value) {
+		Node* temp;
+		temp = new Node;
+		temp->elem = value;
+		if (tail == NULL) {
+			tail = temp;
+		}
+		else {
+			temp->next = tail;
+			tail = temp;
+		}
+	}
+
+	K pop() {
+		if (isEmpty()) {
+			return 0;
+		}
+		Node* delptr = tail;
+		tail = tail->next;
+		K temp = delptr->elem;
+		delete delptr;
+		return temp;
+	}
+};
+
+int main() {
+
+	char K;
+	int n;
+	int counter;
+
+	std::ifstream fin;
+
+	fin.open("input.txt");
+
+	if (!fin.is_open()) {
+		cout << "Oshibka" << endl;
+	}
+	else {
+		cout << "Otkrilsa" << endl;
+	}
+
+	std::ofstream fout;
+
+	fout.open("output.txt", ofstream::out);
+
+	if (!fout.is_open()) {
+		cout << "Ne otkrilsa!" << endl;
+	}
+	else {
+		cout << "Otkrilsa" << endl;
+	}
+
+	fin >> K;
+	fin >> n;
+
+	counter = 0;
+	string* func = new string[n];
+
+	if (K == 'I') {
+		int value;
+		int sum = 0;
+		Stack<int> a;
+		for (int i = 0; i < n; i++) {
+			fin >> func[i];
+			if (func[i] == "PUSH") {
+				counter += 1;
+				fin >> value;
+				a.push(value);
+			}
+			if (func[i] == "POP") {
+				counter -= 1;
+				if (counter < 0) {
+					fout << counter + 1 << " ";
+					return 0;
+				}
+				a.pop();
+			}
+		}
+		fout << counter << " ";
+		for (int i = 0; i < counter; i++) {
+			sum = sum + a.pop();
+		}
+		fout << sum;
+	}
+
+	if (K == 'D') {
+		double value;
+		double sum = 0;
+		Stack<double> a;
+		for (int i = 0; i < n; i++) {
+			fin >> func[i];
+			if (func[i] == "PUSH") {
+				counter += 1;
+				fin >> value;
+				a.push(value);
+			}
+			if (func[i] == "POP") {
+				counter -= 1;
+				if (counter < 0) {
+					fout << counter + 1 << " ";
+					return 0;
+				}
+				a.pop();
+			}
+		}
+		fout << counter << " ";
+		for (int i = 0; i < counter; i++) {
+			sum = sum + a.pop();
+		}
+		fout << sum;
+	}
+
+	if (K == 'S') {
+		string value;
+		string sum = "";
+		Stack<string> a;
+		for (int i = 0; i < n; i++) {
+			fin >> func[i];
+			if (func[i] == "PUSH") {
+				counter += 1;
+				fin >> value;
+				a.push(value);
+			}
+			if (func[i] == "POP") {
+				counter -= 1;
+				if (counter < 0) {
+					fout << counter + 1 << " ";
+					return 0;
+				}
+				a.pop();
+			}
+		}
+		fout << counter << " ";
+		for (int i = 0; i < counter; i++) {
+			sum = sum + a.pop();
+		}
+		fout << sum;
+	}
+
+	delete[] func;
+
+	fin.close();
+
+	fout.close();
+
+	return 0;
+}
