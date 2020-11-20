@@ -1,0 +1,103 @@
+
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double Given_function(double x) {
+    return log(1 + pow(x, 2));
+}
+
+void Reading_from_console(double& left_border, double& right_border) {
+    cout << "Write left border : ";
+    cin >> left_border;
+    cout << "Write right border : ";
+    cin >> right_border;
+}
+
+double Gauss_with_two_nodes(double left_border, double right_border) {
+    double t[2] = {-sqrt(1.0/3), sqrt(1.0/3)};
+    int n = 2;
+    double integral = 0;
+    double x = 0;
+    for (int i = 0; i < n; ++i) {
+        integral += Given_function((left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i]);
+        x = (left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i];
+        cout << "x[" << i << "]= " << x << endl;
+        cout << "f(x[" << i << "])= " << integral << endl;
+    }
+    integral *= (right_border - left_border) / 2;
+
+    cout << endl << "Coefficents:" << "{1, 1}" << endl;
+
+    return integral;
+}
+
+double Gauss_with_three_nodes(double left_border, double right_border) {
+    double t[3] = {-sqrt(3.0/5), 0, sqrt(3.0/5) };
+    double coefficents[3] = {5.0/9, 8.0/9, 5.0/9};
+    int n = 3;
+    double integral = 0;
+    double x = 0;
+    for (int i = 0; i < n; ++i) {
+        integral += coefficents[i] * Given_function((left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i]);
+        x = (left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i];
+        cout << "x[" << i << "]= " << x << endl;
+        cout << "f(x[" << i << "])= " << integral << endl;
+    }
+    integral *= (right_border - left_border) / 2;
+
+    cout << endl << "Coefficents: " << "{";
+    for (int i = 0; i < n; i++) {
+        cout << coefficents[i] << ",";
+    }
+    cout << "}" << endl;
+
+    return integral;
+}
+
+double Gauss_with_five_nodes(double left_border, double right_border) {
+    double t[5] = {-0.90617984 , -0.53846931, 0 , 0.53846931 , 0.90617984};
+    double coefficents[5] = {0.23692688, 0.47862867, 0.56888888, 0.47862867, 0.23692688};
+    int n = 5;
+    double integral = 0;
+    double x = 0;
+    for (int i = 0; i < n; ++i) {
+        integral += coefficents[i] * Given_function((left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i]);
+        x = (left_border + right_border) / 2 + (right_border - left_border) / 2 * t[i];
+        cout << "x[" << i << "]= " << x << endl;
+        cout << "f(x[" << i << "])= " << integral << endl;
+    }
+    integral *= (right_border - left_border) / 2;
+
+    cout << endl << "Coefficents: " << "{";
+    for (int i = 0; i < n; i++) {
+        cout << coefficents[i] << ",";
+    }
+    cout << "}" << endl;
+
+    return integral;
+}
+
+void Print_in_console(double& left_border, double& right_border) {
+    cout << endl << "Gauss with Two Nodes: " << endl;
+    cout << setprecision(8) << "Answer: "<< Gauss_with_two_nodes(left_border, right_border) << endl;
+
+    cout << endl << "Gauss with Three Nodes: " << endl;
+    cout << setprecision(8) << "Answer: "<< Gauss_with_three_nodes(left_border, right_border) << endl;
+
+    cout << endl << "Gauss with Five Nodes: " << endl;
+    cout << setprecision(8) << "Answer: "<< Gauss_with_five_nodes(left_border, right_border) << endl;
+}
+
+int main() {
+    double left_border;
+    double right_border;
+
+    Reading_from_console(left_border, right_border);
+
+    Print_in_console(left_border, right_border);
+
+    return 0;
+}
