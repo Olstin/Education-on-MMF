@@ -1,0 +1,145 @@
+#include <iostream>
+#include <math.h>
+#include <fstream>
+
+using namespace std;
+
+const double PI = 3.141592653589793238463;
+
+class Figure {
+public:
+
+		virtual double area() = 0;
+
+		virtual ~Figure() {};
+};
+
+class Square :public Figure {
+private:
+	double a;
+	public:
+
+		Square(double a) {
+			this->a = a;
+		}
+
+		double area() override {
+			return this->a * this->a;
+		}
+
+		~Square() {};
+};
+
+class Triangle :public Figure {
+private:
+	double a;
+	public:
+
+		Triangle(double a) {
+			this->a = a;
+		}
+
+		double area() override {
+			return this->a * this->a * sqrt(3) / 4;
+		}
+
+		~Triangle() {};
+};
+
+class Circle :public Figure {
+private:
+	double R;
+	public:
+
+		Circle(double R) {
+			this->R = R;
+		}
+
+		double area() override {
+			return this->R * this->R * PI;
+		}
+
+		~Circle() {};
+};
+
+int main()
+{
+	int n = 1;
+
+	double a;
+
+	double res = 0;
+
+	char c;
+
+	std::ifstream fin;
+
+	fin.open("input.txt");
+
+	if (!fin.is_open()) {
+		cout << "Oshibka" << endl;
+	}
+	else {
+		cout << "Otkrilsa" << endl;
+	}
+		fin >> n;
+
+		Figure **Figures = new Figure*[n];
+
+			for (int i = 0; i < n; i++) {
+
+					fin >> c;
+
+					if (c == 'T') {
+						fin >> a;
+						Figures[i] = new Triangle(a);
+						c = 'K';
+					}
+
+					if (c == 'C') {
+						fin >> a;
+						Figures[i] = new Circle(a);
+						c = 'K';
+					}
+
+					if (c == 'S') {
+						fin >> a;
+						Figures[i] = new Square(a);
+						c = 'K';
+					}
+			}
+
+			for (int i = 0; i < n; i++) {
+				res += Figures[i]->area();
+			}
+
+	fin.close();
+
+	std::ofstream fout;
+
+	fout.setf(ios::fixed);
+
+	fout.precision(2);
+
+	fout.open("output.txt", ofstream::out);
+
+	if (!fout.is_open()) {
+		cout << "Ne otkrilsa!" << endl;
+	}
+	else {
+
+		cout << "Otkrilsa" << endl;
+
+		fout << res;
+	}
+
+	fout.close();
+
+	for (int i = 0; i < n; i++) {
+		delete Figures[i];
+	}
+
+	delete[] Figures;
+
+	return 0;
+}
