@@ -1,0 +1,183 @@
+#include <iostream>
+#include <cmath>
+#include <fstream>
+using namespace std;
+
+
+class complex {
+private:
+	double re;
+	double im;
+public:
+
+	complex() {
+		re = 1;
+		im = 0;
+	};
+
+	complex(double r, double i) {
+		re = r;
+		im = i;
+	};
+
+	complex(double r) {
+		re = r;
+		im = 0;
+	};
+
+	complex(complex &com) {
+		re = com.re;
+		im = com.im;
+	};
+
+	~complex() {};
+
+	double abs() {
+		return sqrt(pow(re, 2.0) + pow(im, 2.0));
+	};
+
+	complex operator= (complex &com) {
+
+		re = com.re;
+		im = com.im;
+
+		return com;
+	};
+	
+
+	complex operator+ (complex &com) {
+		complex temp;
+
+		temp.re = re + com.re;
+		temp.im = im + com.im;
+
+		return temp;
+	};
+
+	complex operator* (complex &com) {
+		complex temp;
+
+		temp.re = re*com.re - im*com.im;
+		temp.im = re*com.im + im*com.re;
+
+		return temp;
+	};
+
+	complex operator- (complex &com) {
+		complex temp;
+
+		temp.re = re - com.re;
+		temp.im = im - com.im;
+
+		return temp;
+	};
+
+	complex operator/ (complex &com) {
+		complex temp;
+
+		temp.re = (re * com.re + im * com.im) / (pow(com.re, 2) + pow(com.im, 2));
+		temp.im = (com.re * im - re * com.im) / (pow(com.re, 2) + pow(com.im, 2));
+
+		return temp;
+	};
+
+	bool operator== (complex &com) {
+		if (this->re == com.re && this->im == com.im) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	};
+
+	bool operator!= (complex &com) {
+		if (this->re != com.re || this->im != com.im) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	};
+
+	friend ostream & operator<< (ostream&, const complex&);
+	friend istream & operator>> (istream&, complex&);
+};
+
+ostream& operator<<(ostream &os, const complex &com) {
+
+	if (com.im > 0) {
+
+		os << com.re << "+" << "i*" << com.im << endl;
+
+	}
+	else {
+		os << com.re << "-" << "i*" << abs(com.im) << endl;
+	}
+
+	return os;
+}
+
+istream& operator>>(istream &is, complex &com) {
+
+	is >> com.re;
+	is >> com.im;
+
+	return is;
+}
+
+int main() {
+
+	complex i(0, 1);
+
+	complex a, b, c, d;
+
+	complex res;
+
+	std::ifstream fin;
+
+	fin.open("input.txt");
+
+	if (!fin.is_open()) {
+		cout << "Oshibka" << endl;
+	}
+	else {
+		cout << "Otkrilsa" << endl;
+
+		complex com;
+
+		while (!fin.eof()) {
+			fin >> a;
+			fin >> b;
+			fin >> c;
+			fin >> d;
+		}
+	}
+
+	fin.close();
+
+	complex sqa(pow(a.abs(), 2)), sqd(pow(d.abs(), 2)), sqb(pow(b.abs(), 2));
+
+	res = (a * b - c * d) + (sqa + i * sqd) + c * (sqb + i);
+
+	std::ofstream fout;
+
+	fout.setf(ios::fixed);
+
+	fout.precision(2);
+
+	fout.open("output.txt", ofstream::out);
+
+	if (!fout.is_open()) {
+		cout << "Ne otkrilsa!" << endl;
+	}
+	else {
+
+		cout << "Otkrilsa" << endl;
+
+		fout << res;
+	}
+
+	fout.close();
+
+	return 0;
+}
