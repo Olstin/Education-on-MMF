@@ -1,0 +1,89 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+#define BUKVA 'a'
+#define STRING_END '\0'
+
+typedef struct node {
+    char *word;
+    struct node *next;
+} node;
+
+typedef struct stack {
+    node *root;
+} stack;
+
+bool islet(char *c) {
+    return (*c != '\t') && (*c != ' ') && (*c != '\n');
+}
+
+void del_last(stack *a) {
+    node *pt = a->root;
+    a->root = a->root->next;
+    free(pt->word);
+    free(pt);
+}
+
+int words_insert(stack *a, char *c, FILE *fin) {
+    node *pt = malloc(sizeof(node));
+    if (pt == NULL) {
+        return -1;
+    }
+    pt->word = malloc(sizeof(char));
+    if (pt->word == NULL) {
+        return -1;
+    }
+    pt->word[0] = *c;
+    int size = 0;
+    *c = fgetc(fin);
+    while ((islet(c) == 1) && (*c != EOF)) {
+        char *resize = realloc(pt->word, (size + 2) * sizeof(char));
+        if (resize != NULL) {
+            pt->word = resize;
+        } else {
+            free(pt->word);
+            return 1;
+        }
+        size++;
+        pt->word[size] = *c;
+        *c = fgetc(fin);
+    }
+    pt->word[size + 1] = STRING_END;
+    pt->next = a->root;
+    a->root = pt;
+    return 0;
+}
+
+int print_rev(FILE *fin) {
+    stack a;
+    a.root = NULL;
+    char c = BUKVA;
+    while (c != EOF) {
+        c = fgetc(fin);
+        if ((islet(&c)) == 1 && (c != EOF)) {
+            if (words_insert(&a, &c, fin) == 1) {
+                return -1;
+            }
+        }
+    }
+    while (a.root != NULL) {
+        printf("%s ", a.root->word);
+        del_last(&a);
+    }
+}
+
+int main(int argc, char **argv) {
+    if(argc == 1) {
+        printf("No additional arguments\n");
+        return -1;
+    }
+    FILE *fin = fopen(argv[1], "r");
+    if (fin == NULL) {
+        perror("fopen()");
+        return -1;
+    }
+    print_rev(fin);
+    fclose(fin);
+}
