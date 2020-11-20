@@ -1,0 +1,135 @@
+#include <stdio.h>
+
+#include <stdbool.h>
+#include <assert.h>
+
+#include <stdlib.h>
+
+#define DOT '.'
+#define VISITED true
+#define NONVISITED false
+
+int DFS(int x, int y, char * maze, char * visit, int n, int m, bool * exit) {
+	int steps_size = 64;
+	short* steps_x = malloc(steps_size* sizeof(short));
+        if(steps_x == NULL) {
+                return -1;
+        }
+	short* steps_y = malloc(steps_size* sizeof(short));
+        if(steps_y == NULL) {
+            free(steps_x);
+            return -1;
+        }
+	int steps_i = 0;
+
+	while (!(*(exit))) {
+		if (x == n - 1 || y == m - 1 || x == 0 || y == 0) {
+			*(exit) = true;
+		}
+		else {
+			visit[y * n + x] = VISITED;
+			int k = 0;
+			for (int i = 0; i < steps_i; ++i) {
+				if (steps_x[i] == x && steps_y[i] == y) {
+					steps_x[i - k] = steps_x[i + 1];
+					steps_y[i - k] = steps_y[i + 1];
+					++k;
+				}
+				else {
+					if (k)
+					{
+						steps_x[i - k] = steps_x[i];
+						steps_y[i - k] = steps_y[i];
+					}
+				}
+			}
+			steps_i -= k;
+			int ort_step_x[4] = { 1,-1,0,0 };
+			int ort_step_y[4] = { 0, 0,1,-1 };
+			for (int i = 0; i < 4; ++i) {
+				int _x = x + ort_step_x[i];
+				int _y = y + ort_step_y[i];
+				if (maze[_y * n + _x] == DOT && visit[_y * n + _x] == NONVISITED) {
+					if (steps_i >= steps_size) {
+						steps_size *= 2;
+						steps_x = realloc(steps_x, steps_size * sizeof(short));
+						if (steps_x == NULL) {
+							return -1;
+						}
+						steps_y = realloc(steps_y, steps_size * sizeof(short));
+						if (steps_y == NULL) {
+                            free(steps_x);
+							return -1;
+						}
+					}
+					steps_x[steps_i] = _x;
+					steps_y[steps_i] = _y;
+					steps_i++;
+				}
+			}
+			if (steps_i <= 0) {
+				break;
+			}
+			--steps_i;
+			x = steps_x[steps_i];
+			y = steps_y[steps_i];
+		}
+	}
+	free(steps_x);
+	free(steps_y);
+	return 0;
+}
+void fill(int * x, int * y, char * maze, char * visit, int n, int m) {
+	char* buffer = malloc(n + 1);
+        if (buffer == NULL) {
+            return -1;
+        }
+    for (int i = 0; i < m; i++) {
+        scanf("%s", buffer);
+        for (int j = 0; j < n; j++) {
+            maze[i * n + j] = buffer[j];
+            if (maze[i * n + j] == 'x') {
+                *(x) = j;
+                *(y) = i;
+            }
+            visit[i * n + j] = NONVISITED;
+        }
+    }
+	free(buffer);
+}
+
+
+void print(bool exit) {
+    if (exit == true) {
+        printf("Yes");
+    } else {
+        printf("No");
+    }
+}
+
+int main() {
+    int n = 0;
+    int m = 0;
+
+	if (scanf("%d %d\n", &m, &n) != 2) {
+		return -1;
+	}
+	char * maze = malloc(n * m * sizeof(char));
+    if (maze == NULL) {
+        return -1;
+    }
+    char * visit = malloc(n * m * sizeof(char));
+    if (visit == NULL) {
+        free(maze);
+        return -1;
+    }
+    int x = 0;
+    int y = 0;
+    fill(&x, &y, maze, visit, n, m);
+    bool exit = false;
+    DFS(x, y, maze, visit, n, m, & exit);
+    free(maze);
+    free(visit);
+    print(exit);
+    return 0;
+}
