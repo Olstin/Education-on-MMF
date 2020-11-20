@@ -1,0 +1,61 @@
+
+#define _USE_MATH_DEFINES
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+#include <cstdlib>
+
+void Reading_from_console(double& initial_approximation) {
+    cout << "Write initial approximation of the root : ";
+    cin >> initial_approximation;
+}
+
+double Given_function(double x) {
+    return exp(x) - 5*x;
+}
+
+double Derivative_of_given_function(double x) {
+    return exp(x) - 5;
+}
+
+double g(double x) {
+    return x - Given_function(x) / Derivative_of_given_function(x);
+}
+
+double Newton_method(double& eps, double& initial_approximation) {
+
+    for (int iterations = 1; eps < fabs(Given_function(initial_approximation)); iterations++) {
+
+            if (Derivative_of_given_function(initial_approximation) == 0) {
+                break;
+            }
+
+            initial_approximation = g(initial_approximation);
+
+            cout << "X: " << setprecision(8) << initial_approximation << endl;
+            cout << "Function: " << setprecision(8) << Given_function(initial_approximation) << endl;
+            cout << "Iterations: " << iterations << endl;
+    }
+
+    return initial_approximation;
+}
+
+void Print_in_console(double& initial_approximation, double& eps) {
+
+    cout << "x = " << setprecision(8) << Newton_method(eps, initial_approximation) << endl;
+
+}
+
+int main()
+{
+    double initial_approximation;
+    double eps1 = 0.0000001;
+    double eps2 = 0.000000001;
+
+    Reading_from_console(initial_approximation);
+
+    Print_in_console(initial_approximation, eps2);
+
+    return 0;
+}
