@@ -1,0 +1,43 @@
+
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+using namespace std;
+
+double Given_function(double x) { 
+
+	return log(1 + pow(x, 2));
+}
+
+void Reading_from_console(double& left_border, double& right_border, int& n) {
+	cout << "Write left border : ";
+	cin >> left_border;
+	cout << "Write right border : ";
+	cin >> right_border;
+	cout << "Write the number of segments of the decomposition into[a, b] : ";
+	cin >> n;
+}
+
+double Trapezoid_Method(double& left_border, double& right_border, int& n, double& y) {
+	double dy = 0;
+	dy = (right_border - left_border) / n;
+	y += Given_function(left_border) + Given_function(right_border);
+	for (int i = 1; i < n; i++) {
+		y += 2*(Given_function(left_border + dy * i));
+	}
+
+	return (((right_border - left_border) / (2 * n)) * y);
+}
+
+int main() {
+	int n;
+	double y = 0;
+	double left_border, right_border;
+
+	Reading_from_console(left_border, right_border, n);
+
+	cout << "Answer: " << setprecision(8) << Trapezoid_Method(left_border, right_border, n, y) << endl;
+
+	return 0;
+}
+
