@@ -1,0 +1,118 @@
+#include <algorithm>
+#include <fstream>
+#include <unordered_map>
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <string.h>
+
+using namespace std;
+
+void rep_s(string *s) {
+	replace((*s).begin(), (*s).end(), ':', ' ');
+	replace((*s).begin(), (*s).end(), ',', ' ');
+	replace((*s).begin(), (*s).end(), '.', ' ');
+	replace((*s).begin(), (*s).end(), '?', ' ');
+	replace((*s).begin(), (*s).end(), '!', ' ');
+	replace((*s).begin(), (*s).end(), ';', ' ');
+}
+
+void word_counter(string s, unordered_map<string, int> &maper) {
+
+		const char *c = s.c_str();
+
+			if (maper.find(c) != maper.end()) {
+				auto it = maper.find(c);
+				it->second += 1;
+			}
+
+		maper.insert(make_pair(c, 1));
+}
+
+void line_sep(string s, unordered_map<string, int> &maper) {
+	auto pos = s.find(" ");
+	if (pos != string::npos) {
+		string s1 = s.substr(0, pos);
+		s = s.substr(pos + 1);
+		word_counter(s1, maper);
+		if (s != "") {
+			line_sep(s, maper);
+		}
+	} else {
+		word_counter(s, maper);
+	}
+}
+
+int main() {
+
+	int max = 0;
+	int min = 100000000;
+	string s = "";
+
+	std::ifstream fin;
+	fin.exceptions(ifstream::badbit | ifstream::failbit);
+
+	try {
+		fin.open("input.txt");
+	}
+
+	catch (const ifstream::failure & ex) {
+		cout << ex.what() << endl;
+		cout << ex.code() << endl;
+		cout << "File isn't exist!" << endl;
+		return -1;
+	}
+
+	std::ofstream fout;
+
+	fout.open("output.txt", ofstream::out);
+
+	unordered_map<string, int> maper;
+
+	while (!fin.eof()) {
+
+		try {
+			fin >> s;
+		}
+
+		catch (...) {
+			cout << "File is empty!" << endl;
+			fin.close();
+			fout.close();
+			return -1;
+		}
+
+		rep_s(&s);
+
+		transform(s.begin(), s.end(), s.begin(), tolower);
+
+		auto pos = s.find(" ");
+		if (pos != string::npos) {
+			line_sep(s, maper);
+		}
+		else {
+			word_counter(s, maper);
+		}
+	}
+
+	for (auto it = maper.begin(); it != maper.end(); ++it) {
+		if (it->second > max) {
+			max = it->second;
+		}
+		if (it->second < min) {
+			min = it->second;
+		}
+	}
+
+	fout << maper.size() << " ";
+	fout << max << " ";
+	fout << min;
+
+	maper.clear();
+
+	fin.close();
+
+	fout.close();
+
+	return 0;
+}
