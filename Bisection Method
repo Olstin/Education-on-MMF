@@ -1,0 +1,61 @@
+#define _USE_MATH_DEFINES
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+void Reading_from_console(double& left_border, double& right_border) {
+    cout << "Write left border : ";
+    cin >> left_border;
+    cout << "Write right border : ";
+    cin >> right_border;
+}
+
+double Given_function(double x) {
+    return exp(x) - 5*x;
+}
+
+
+double Bisection_method(double left_border, double right_border, double eps) {
+    int iterations = 0;
+    while (right_border - left_border > eps) {
+        iterations++;
+
+        if (Given_function(left_border) * Given_function((right_border + left_border) / 2) == 0) {
+            break;
+        }
+
+        if (Given_function(left_border) * Given_function((right_border + left_border) / 2) > 0) {
+            left_border = (right_border + left_border) / 2;
+        }
+        else {
+            right_border = (right_border + left_border) / 2;
+        }
+    }
+
+    cout << "Number of iterations: " << iterations;
+
+    return (right_border + left_border) / 2;
+}
+
+void Print_in_console(double& left_border, double& right_border, double eps) {
+
+    //cout << endl << "x[1] = " << setprecision(8) << Bisection_method(left_border, 0, eps) << endl;
+
+    cout << endl << "x = " << setprecision(8) << Bisection_method(left_border, right_border, eps) << endl;
+
+}
+
+int main() {
+    double left_border;
+    double right_border;
+    const double eps1 = 0.0000001;
+    const double eps2 = 0.000000001;
+
+    Reading_from_console(left_border, right_border);
+
+    Print_in_console(left_border, right_border, eps2);
+
+    return 0;
+}
