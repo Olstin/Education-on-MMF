@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+
+int main(){
+	int a1[1000];
+	int a2[1000];
+	int size = 0;
+	int p = 0;
+	bool minus = false;
+	bool number = false;
+	int m = 0;
+	for (int i = 0; i >= 0; i++) {
+		int c = getchar();
+		if (c != ' ' && c != '-' && c != '\n') {
+			if (number == true) {
+				if (minus == false) {
+					m = c - '0';
+					a1[i - 1] = a1[i - 1] * 10 + m;
+					i--;
+				}
+				else {
+					m = c - '0';
+					a1[i - 1] = a1[i - 1] * 10 - m;
+					i--;
+				}
+			}
+			else {
+				number = true;
+				size++;
+				if (minus == true) {
+					a1[i] = c - '0';
+					a1[i] = -a1[i];
+				}
+				else {
+					a1[i] = c - '0';
+				}
+			}
+		}
+		else {
+			number = false;
+			if (c == '-') {
+				minus = true;
+			}
+			else {
+				minus = false;
+			}
+			i--;
+		}
+		if (c == '\n') {
+
+			break;
+		}
+	}
+	size = 0;
+	minus = false;
+	number = false;
+	m = 0;
+	for (int i = 0; i >= 0; i++) {
+		int c = getchar();
+		if (c != ' ' && c != '-' && c != '\n') {
+			if (number == true) {
+				if (minus == false) {
+					m = c - '0';
+					a2[i - 1] = a2[i - 1] * 10 + m;
+					i--;
+				}
+				else {
+					m = c - '0';
+					a2[i - 1] = a2[i - 1] * 10 - m;
+					i--;
+				}
+			}
+			else {
+				number = true;
+				size++;
+				if (minus == true) {
+					a2[i] = c - '0';
+					a2[i] = -a2[i];
+				}
+				else {
+					a2[i] = c - '0';
+				}
+			}
+		}
+		else {
+			number = false;
+			if (c == '-') {
+				minus = true;
+			} else {
+			    minus = false;
+			}
+			i--;
+		}
+		if (c == '\n') {
+			break;
+		}
+	}
+	for (int i = 0; i < size; i++) {
+		p += a1[i] * a2[i];
+	}
+	printf("%d", p);
+	return 0;
+}
