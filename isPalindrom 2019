@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+char a[1000];
+
+int main() {
+
+    vivod();
+
+    return 0;
+}
+
+int schitivanie() {
+    char c = 'a';
+    int i = 0;
+    while (c != '\n') {
+        c = getchar();
+        if (c != '\n' && c != '\0') {
+            a[i] = c;
+            i++;
+        }
+    }
+    return i;
+}
+
+int palindrom(int i) {
+    int k = 0;
+
+    if (i <= 1) { //Если символ один или '\n'.
+        return 1;
+    }
+
+    i--; //В i заносим номер последнего элемента массива(по совместительству номер последней буквы слова).
+
+    while (a[k] == a[i - k]) {
+        k++;
+    }
+
+    if (k > i / 2) {
+        return 1;
+    }
+    return -1;
+}
+
+void vivod() {
+    if (palindrom(schitivanie()) == 1) {
+        printf("Yes");
+    } else {
+        printf("No");
+    }
+}
