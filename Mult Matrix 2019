@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int Get_Size(char filename[]) {
+    FILE* Sif;
+    Sif = fopen(filename, "r");
+    if (Sif == NULL) {
+        printf("Can not open %s", filename);
+        return -1;
+    }
+    int size_matrix;
+    fscanf(Sif, "%d", &size_matrix);
+    return size_matrix;
+}
+
+long long* Read_Matrix(char filename[]) {
+    int matrix_size;
+    FILE* Mif;
+    Mif = fopen(filename, "r");
+    if (Mif != NULL) {
+        fscanf(Mif, "%d", &matrix_size);
+        long long *matrix = (long long*)malloc(sizeof(long long)*matrix_size*matrix_size);
+        if (matrix == NULL) {
+            exit(-1);
+        }
+        for (int i = 0; i < matrix_size; i++) {
+            for (int j = 0; j < matrix_size; j++) {
+                fscanf(Mif, " %lld ", (matrix + i * matrix_size + j));
+            }
+        }
+        fclose(Mif);
+        return matrix;
+    }
+    else {
+        printf("Can not open %s", filename);
+        exit(-1);
+    }
+}
+
+void Comp_Matrix(long long *A, long long *B, char filename[], int matrix_size) {
+    FILE* Mult;
+    Mult = fopen(filename, "w");
+    fprintf(Mult, "%d\n", matrix_size);
+    for (int i = 0; i < matrix_size; i++) {
+        for (int j = 0; j < matrix_size; j++) {
+            long long mult = 0;
+            for (int k = 0; k < matrix_size; k++) {
+                long long Matrix_A = *(A + i * matrix_size + k);
+                long long Matrix_B = *(B + k * matrix_size + j);
+                mult += Matrix_A*Matrix_B;
+            }
+            fprintf(Mult, "%lld\t", mult);
+        }
+        fprintf(Mult, "\n");
+    }
+    free(A);
+    free(B);
+    fclose(Mult);
+}
+
+int main() {
+    long long *A = Read_Matrix("A.txt");
+    long long *B = Read_Matrix("B.txt");
+    Comp_Matrix(A, B, "mult.txt", Get_Size("A.txt"));
+    return 0;
+}
