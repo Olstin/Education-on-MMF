@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define BUKVA 'a'
+
+bool istab(char c) {
+    return(c == '\t' || c == '\n' || c == ' ');
+}
+
+int main(int argc, char ** argv) {
+    FILE* input;
+    char * filename = argv[1];
+    int words = 0;
+    bool letter = true;
+    char c = BUKVA;
+    input = fopen(filename,"r");
+    if (input == NULL) {
+        printf("Can not open %s", filename);
+        exit(-1);
+    }
+    while (c != EOF) {
+        c = fgetc(input);
+        if (istab(c) == 0) {
+            letter = true;
+        }
+        if (istab(c) && letter == true) {
+            words ++;
+            letter = false;
+        }
+    }
+    printf("Input: %s \n", filename);
+    printf("Output: %d \n", words);
+    fclose(input);
+}
