@@ -1,0 +1,119 @@
+
+#include <iostream>
+#include <vector>
+#include <fstream>
+
+using namespace std;
+
+vector<vector<int>> graph;
+vector<bool> used; // вектор посещенных вершин
+vector<int> carcass; // вектор обхода по вершинам
+
+int root; // вершина обхода
+int n; // количество вершин
+
+void createGraph(ifstream &fin) {
+
+    for (int i = 0; i < n; ++i) {
+        graph[i].resize(n);
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            fin >> graph[i][j];
+        }
+    }
+}
+
+void createGraphWithCmd() {
+
+    for (int i = 0; i < n; ++i) {
+        graph[i].resize(n);
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> graph[i][j];
+        }
+    }
+}
+
+void DFS(int root) {
+    used[root] = true;
+    carcass.push_back(root);
+    for (int i = 0; i < n; i++) {
+        if ((graph[root][i]) && (!used[i])) {
+            DFS(i);
+        }
+    }
+}
+
+void graphCarcass() {
+    for (int i = 0; i < n; i++) { // для удобства зануляем матрицу смежности графа
+        for (int j = 0; j < n; j++) {
+            graph[i][j] = 0;
+        }
+    }
+
+    for (int i = 1; i < carcass.size(); i++) { // строим матрицу смежности для каркаса графа
+        graph[carcass[i - 1]][carcass[i]] = 1;
+        graph[carcass[i]][carcass[i - 1]] = 1;
+    }
+}
+
+void printCarcass() {
+    cout << "Carcass: ";
+    for (int i = 0; i < carcass.size(); i++) {
+        cout << carcass[i] << " ";
+    }
+
+    cout << endl << "Matrix Carcass:" << endl;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+           cout << graph[i][j];
+        }
+        cout << endl;
+    }
+}
+
+void close(ifstream &fin) {
+    fin.close();
+    graph.clear();
+    used.clear();
+    carcass.clear();
+}
+
+int main() {
+
+    ifstream fin("Graph.txt");
+
+    if (fin) {
+        fin >> n;
+        fin >> root;
+        graph.resize(n);
+        createGraph(fin);
+    }
+    else {
+        cout << "Enter number of vertices (n): ";
+        cin >> n;
+        cout << endl << "Enter the root: ";
+        cin >> root;
+        graph.resize(n);
+        createGraphWithCmd();
+    }
+
+    used.resize(n);
+
+    DFS(root);
+
+    graphCarcass();
+
+    printCarcass();
+
+    close(fin);
+
+    return 0;
+}
+
+
