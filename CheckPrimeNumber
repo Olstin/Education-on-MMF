@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+bool isPrime(unsigned int n){
+    if (n <= 1){
+        printf("Ne validnye dannye");
+        exit(1);
+    }
+    for(int i = 2; i <= n-1; i++){
+        if(n % i == 0){
+           return 0;
+        }
+    }
+    return 1;
+}
+
+void vivod(unsigned int n){
+    if(isPrime(n) == 1){
+        printf ("Prostoe: %d \n", n);
+    } else {
+        printf ("Ne Prostoe: %d \n", n);
+    }
+}
+
+void main(void){
+    vivod(4);
+    vivod(369);
+    vivod(101);
+    vivod(1001);
+    vivod(69);
+    vivod(5);
+    vivod(2);
+    vivod(3);
+    vivod(11);
+    vivod(37);
+    vivod(1); //Ne validnye dannye
+    vivod(0); //Ne validnye dannye
+}
