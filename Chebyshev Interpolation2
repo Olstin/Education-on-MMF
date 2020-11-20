@@ -1,0 +1,71 @@
+
+#define _USE_MATH_DEFINES
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+double Given_function(double x) {
+    return exp(x);
+}
+
+void Reading_from_console(int& n, double& x) {
+    cout << "Enter the number of interpolation nodes: ";
+    cin >> n;
+    cout << endl << "Enter the point to find the value of the Lagrange polynomial: ";
+    cin >> x;
+}
+
+double Lagrange_polinomial(int& n, double& x, double*& X, double*& Y) {
+    double L = 0;
+
+    for (int i = 0; i < n; i++) {
+        double F = 1;
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                F *= (x - X[j]) / (X[i] - X[j]);
+            }
+        }
+        L += Y[i] * F;
+    }
+
+    return L;
+}
+
+double Chebyshev(int& n, double& x, double*& X, double*& Y) {
+
+    for (int i = 0; i < n; i++) {
+        X[i] = cos(M_PI * (2 * (i + 1) - 1) / (2 * n));
+        Y[i] = Given_function(X[i]);
+        cout << endl << setprecision(8) << " (" << X[i] << ", " << Y[i] << ") " << "\n";
+    }
+
+    return Lagrange_polinomial(n, x, X, Y);
+}
+
+int main() {
+    int n;
+    double x;
+
+    Reading_from_console(n, x);
+
+    double* Y = new double[n];
+    double* X = new double[n];
+
+    cout << endl << "exp(x) = " << setprecision(8) << exp(x) << endl;
+
+    double result = Chebyshev(n, x, X, Y);
+
+    cout << endl << setprecision(8) << "Ch(x) = " << result << endl << "R(x) = f(x) - L(x) = " << fabs(exp(x) - result) << endl;
+
+    double Xn[5] = {-1, -0.33333333, 0, 0.33333333, 1};
+
+    for (int i = 0; i < 5; i++) {
+        Y[i] = Given_function(Xn[i]);
+    }
+
+    n = 5;
+
+    cout << endl << setprecision(8) << "Lagrange: " << endl << "R(x) = f(x) - L(x) = " << fabs(exp(x) - Lagrange_polinomial(n, x, X, Y)) << endl;
+
+}
