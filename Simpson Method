@@ -1,0 +1,46 @@
+
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+using namespace std;
+
+double Given_function(double x) {
+	return log(1 + pow(x, 2));
+}
+
+void Reading_from_console(double& left_border, double& right_border, int& n) {
+	cout << "Write left border : ";
+	cin >> left_border;
+	cout << "Write right border : ";
+	cin >> right_border;
+	cout << "Write the number of segments of the decomposition into[a, b] : ";
+	cin >> n;
+}
+
+double Simpson_method(double& left_border, double& right_border, int& n) {
+	double width = (right_border - left_border) / n;
+	double simpson_integral = 0;
+
+	for (int i = 0; i < n; i++) {
+		double x1 = left_border + i * width;
+		double x2 = left_border + (i + 1) * width;
+		simpson_integral += (x2 - x1) / 6.0 * (Given_function(x1) + 4.0 * Given_function(0.5 * (x1 + x2)) + Given_function(x2));
+	}
+
+	return simpson_integral;
+}
+
+int main() {
+
+	double left_border;
+	double right_border;
+	int n;
+
+	Reading_from_console(left_border, right_border, n);
+
+	Simpson_method(left_border, right_border, n);
+
+	cout << "Answer: " << setprecision(8) << Simpson_method(left_border, right_border, n) << endl;
+
+	return 0;
+}
